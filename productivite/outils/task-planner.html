@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificateur de tâches - Productif Pro</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/productivite.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>...</header>
+
+    <main>
+        <div class="container section">
+            <h1>Planificateur de tâches quotidiennes</h1>
+            <div class="tool-container">
+                <form id="taskForm" onsubmit="ajouterTache(event)">
+                    <div class="form-group">
+                        <label>Nouvelle tâche :</label>
+                        <input type="text" id="taskInput" placeholder="Ex: Répondre aux emails" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Priorité :</label>
+                        <select id="priorityInput">
+                            <option value="haute">Haute</option>
+                            <option value="moyenne" selected>Moyenne</option>
+                            <option value="basse">Basse</option>
+                        </select>
+                    </div>
+                    <button type="submit">Ajouter</button>
+                </form>
+
+                <div style="margin-top: 2rem;">
+                    <h3>Mes tâches</h3>
+                    <ul id="taskList" style="list-style: none; padding: 0;"></ul>
+                </div>
+                <button onclick="viderTaches()" style="background: #f44336; margin-top: 1rem;">Vider tout</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>...</footer>
+
+    <script>
+        // Récupérer les tâches du localStorage ou initialiser
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+        function afficherTaches() {
+            const list = document.getElementById('taskList');
+            list.innerHTML = '';
+            tasks.forEach((task, index) => {
+                const li = document.createElement('li');
+                li.style.display = 'flex';
+                li.style.justifyContent = 'space-between';
+                li.style.alignItems = 'center';
+                li.style.padding = '0.5rem';
+                li.style.margin = '0.5rem 0';
+                li.style.backgroundColor = task.priorite === 'haute' ? '#ffebee' : (task.priorite === 'moyenne' ? '#fff3e0' : '#e8f5e8');
+                li.style.borderRadius = '5px';
+                li.innerHTML = `
+                    <span><strong>${task.nom}</strong> (Priorité ${task.priorite})</span>
+                    <button onclick="supprimerTache(${index})" style="background: #f44336; padding: 0.25rem 0.5rem;">X</button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function ajouterTache(e) {
+            e.preventDefault();
+            const nom = document.getElementById('taskInput').value.trim();
+            const priorite = document.getElementById('priorityInput').value;
+            if (nom === '') return;
+
+            tasks.push({ nom, priorite });
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            afficherTaches();
+            document.getElementById('taskForm').reset();
+        }
+
+        function supprimerTache(index) {
+            tasks.splice(index, 1);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            afficherTaches();
+        }
+
+        function viderTaches() {
+            if (confirm('Supprimer toutes les tâches ?')) {
+                tasks = [];
+                localStorage.removeItem('tasks');
+                afficherTaches();
+            }
+        }
+
+        // Afficher au chargement
+        window.onload = afficherTaches;
+    </script>
+</body>
+</html>
