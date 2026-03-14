@@ -1,0 +1,13 @@
+/* Couleurs spécifiques finance */
+.hero {
+    background: linear-gradient(135deg, #0077be, #4caf50) !important;
+}
+.card i {
+    color: #0077be;
+}
+.btn {
+    background: #0077be;
+}
+.btn:hover {
+    background: #005fa3;
+}
