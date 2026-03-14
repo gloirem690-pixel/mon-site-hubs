@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur de budget - Mon Argent, Ma Vie</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>... (identique aux autres pages, avec navigation) ...</header>
+
+    <main>
+        <div class="container section">
+            <h1>Calculateur de budget mensuel</h1>
+            <div class="tool-container">
+                <form id="budgetForm">
+                    <div class="form-group">
+                        <label>Revenus mensuels (€) :</label>
+                        <input type="number" id="revenus" placeholder="Ex: 2500" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Loyer / crédit (€) :</label>
+                        <input type="number" id="loyer" placeholder="Ex: 800" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Alimentation (€) :</label>
+                        <input type="number" id="alimentation" placeholder="Ex: 300" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Transport (€) :</label>
+                        <input type="number" id="transport" placeholder="Ex: 100" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Loisirs (€) :</label>
+                        <input type="number" id="loisirs" placeholder="Ex: 150" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Autres dépenses (€) :</label>
+                        <input type="number" id="autres" placeholder="Ex: 200" value="0">
+                    </div>
+                    <button type="button" onclick="calculerBudget()">Calculer</button>
+                </form>
+
+                <div id="resultat" class="result" style="display: none;"></div>
+                <canvas id="budgetChart" width="400" height="200" style="margin-top: 2rem; display: none;"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <footer>...</footer>
+
+    <script>
+        function calculerBudget() {
+            const revenus = parseFloat(document.getElementById('revenus').value) || 0;
+            const loyer = parseFloat(document.getElementById('loyer').value) || 0;
+            const alimentation = parseFloat(document.getElementById('alimentation').value) || 0;
+            const transport = parseFloat(document.getElementById('transport').value) || 0;
+            const loisirs = parseFloat(document.getElementById('loisirs').value) || 0;
+            const autres = parseFloat(document.getElementById('autres').value) || 0;
+
+            const totalDepenses = loyer + alimentation + transport + loisirs + autres;
+            const solde = revenus - totalDepenses;
+
+            const resultDiv = document.getElementById('resultat');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <strong>Total des dépenses :</strong> ${totalDepenses.toFixed(2)} €<br>
+                <strong>Solde restant :</strong> ${solde.toFixed(2)} €<br>
+                ${solde >= 0 ? '✅ Vous êtes dans le vert !' : '❌ Vous êtes dans le rouge, révisez vos dépenses.'}
+            `;
+
+            // Graphique
+            const ctx = document.getElementById('budgetChart').getContext('2d');
+            document.getElementById('budgetChart').style.display = 'block';
+
+            // Détruire l'ancien graphique s'il existe
+            if (window.budgetChartInstance) {
+                window.budgetChartInstance.destroy();
+            }
+
+            window.budgetChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Loyer', 'Alimentation', 'Transport', 'Loisirs', 'Autres', 'Épargne'],
+                    datasets: [{
+                        data: [loyer, alimentation, transport, loisirs, autres, Math.max(0, solde)],
+                        backgroundColor: ['#0077be', '#4caf50', '#ff9800', '#f44336', '#9c27b0', '#607d8b']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
