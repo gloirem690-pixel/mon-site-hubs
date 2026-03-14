@@ -1,0 +1,13 @@
+/* Couleurs spécifiques productivité */
+.hero {
+    background: linear-gradient(135deg, #ff9800, #607d8b) !important;
+}
+.card i {
+    color: #ff9800;
+}
+.btn {
+    background: #ff9800;
+}
+.btn:hover {
+    background: #e68900;
+}
